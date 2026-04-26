@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boston House Price Prediction</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 3rem 0;
+            color: #333;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+            padding: 2.5rem;
+            height: 100%;
+        }
+        .info-section {
+            background: linear-gradient(135deg, #434190 0%, #2d3748 100%);
+            color: white;
+            border: none;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .info-section::before {
+            content: "";
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 60%);
+            transform: rotate(30deg);
+            pointer-events: none;
+        }
+        .info-section h3 {
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: #e2e8f0;
+        }
+        .info-section p {
+            color: #a0aec0;
+            margin-bottom: 2rem;
+            font-size: 0.95rem;
+        }
+        .info-list {
+            list-style: none;
+            padding: 0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+        .info-list li {
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            align-items: flex-start;
+        }
+        .info-list li:last-child {
+            border-bottom: none;
+        }
+        .info-list strong {
+            color: #63b3ed;
+            min-width: 80px;
+            font-weight: 600;
+            flex-shrink: 0;
+            margin-right: 15px;
+            font-size: 1rem;
+        }
+        .form-control {
+            background: rgba(255, 255, 255, 0.9);
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 0.75rem 1rem;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(66, 153, 225, 0.2);
+            border-color: #4299e1;
+            transform: translateY(-1px);
+        }
+        .btn-predict {
+            background: linear-gradient(135deg, #4299e1 0%, #3182ce 100%);
+            border: none;
+            border-radius: 12px;
+            padding: 1rem 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            transition: all 0.3s ease;
+            color: white;
+            width: 100%;
+            margin-top: 1.5rem;
+            font-size: 1.1rem;
+            box-shadow: 0 4px 6px rgba(66, 153, 225, 0.3);
+        }
+        .btn-predict:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(66, 153, 225, 0.4);
+            color: white;
+        }
+        .result-box {
+            background: linear-gradient(135deg, #48bb78 0%, #38a169 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(72, 187, 120, 0.4);
+            animation: slideUp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .form-label {
+            font-weight: 600;
+            color: #4a5568;
+            font-size: 0.85rem;
+            margin-bottom: 0.4rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .info-scroll {
+            padding-right: 15px;
+        }
+        .info-scroll::-webkit-scrollbar {
+            width: 6px;
+        }
+        .info-scroll::-webkit-scrollbar-track {
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+        }
+        .info-scroll::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 10px;
+        }
+        .info-scroll::-webkit-scrollbar-thumb:hover {
+            background: rgba(255,255,255,0.5);
+        }
+        .form-header {
+            margin-bottom: 2rem;
+            color: #2d3748;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    
+    <div class="container">
+        <div class="row g-4 align-items-stretch">
+            
+            <!-- Information Section -->
+            <div class="col-lg-5">
+                <div class="glass-card info-section info-scroll">
+                    <h3>Boston Housing Dataset</h3>
+                    <p>This dataset contains information collected by the U.S. Census Service concerning housing in the area of Boston MA. Below are the details of the input features required for the prediction.</p>
+                    
+                    <ul class="info-list">
+                        <li><strong>CRIM</strong> <span>Per capita crime rate by town.</span></li>
+                        <li><strong>ZN</strong> <span>Proportion of residential land zoned for lots over 25,000 sq.ft.</span></li>
+                        <li><strong>INDUS</strong> <span>Proportion of non-retail business acres per town.</span></li>
+                        <li><strong>CHAS</strong> <span>Charles River dummy variable (1 if tract bounds river; 0 otherwise).</span></li>
+                        <li><strong>NOX</strong> <span>Nitric oxides concentration (parts per 10 million).</span></li>
+                        <li><strong>RM</strong> <span>Average number of rooms per dwelling.</span></li>
+                        <li><strong>AGE</strong> <span>Proportion of owner-occupied units built prior to 1940.</span></li>
+                        <li><strong>DIS</strong> <span>Weighted distances to five Boston employment centres.</span></li>
+                        <li><strong>RAD</strong> <span>Index of accessibility to radial highways.</span></li>
+                        <li><strong>TAX</strong> <span>Full-value property-tax rate per $10,000.</span></li>
+                        <li><strong>PTRATIO</strong> <span>Pupil-teacher ratio by town.</span></li>
+                        <li><strong>B</strong> <span>1000(Bk - 0.63)² where Bk is the proportion of black people by town.</span></li>
+                        <li><strong>LSTAT</strong> <span>% lower status of the population.</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Form Section -->
+            <div class="col-lg-7">
+                <div class="glass-card">
+                    <h2 class="form-header text-center">Predict House Price</h2>
+                    <form action="{{ url_for('predict') }}" method="POST">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label">CRIM</label>
+                                <input type="text" name="CRIM" class="form-control" placeholder="Crime rate" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 0.006 - 88.98</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">ZN</label>
+                                <input type="text" name="ZN" class="form-control" placeholder="Zoned residential land" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 0.0 - 100.0</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">INDUS</label>
+                                <input type="text" name="INDUS" class="form-control" placeholder="Non-retail business acres" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 0.46 - 27.74</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">CHAS</label>
+                                <input type="text" name="CHAS" class="form-control" placeholder="Charles River dummy (0 or 1)" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 0.0 - 1.0</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">NOX</label>
+                                <input type="text" name="NOX" class="form-control" placeholder="Nitric oxides concentration" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 0.385 - 0.871</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">RM</label>
+                                <input type="text" name="RM" class="form-control" placeholder="Average rooms" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 3.56 - 8.78</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">AGE</label>
+                                <input type="text" name="AGE" class="form-control" placeholder="Units built prior to 1940" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 2.9 - 100.0</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">DIS</label>
+                                <input type="text" name="DIS" class="form-control" placeholder="Weighted distances to employment centers" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 1.13 - 12.13</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">RAD</label>
+                                <input type="text" name="RAD" class="form-control" placeholder="Index of accessibility to radial highways" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 1.0 - 24.0</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">TAX</label>
+                                <input type="text" name="TAX" class="form-control" placeholder="Full-value property-tax rate per $10,000" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 187.0 - 711.0</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">PTRATIO</label>
+                                <input type="text" name="PTRATIO" class="form-control" placeholder="Pupil-teacher ratio by town" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 12.6 - 22.0</small>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label">B</label>
+                                <input type="text" name="B" class="form-control" placeholder="Black people proportion by town" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 0.32 - 396.9</small>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label">LSTAT</label>
+                                <input type="text" name="LSTAT" class="form-control" placeholder="Lower status of the population" required>
+                                <small class="text-muted" style="font-size: 0.75rem;">Range: 1.73 - 37.97</small>
+                            </div>
+                            
+                            <div class="col-12 mt-4">
+                                <button type="submit" class="btn-predict">Predict Price</button>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% if text %}
+                    <div class="result-box">
+                        {{text}}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
