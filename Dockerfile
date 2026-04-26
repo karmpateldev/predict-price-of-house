@@ -16,5 +16,5 @@ COPY . .
 # Make port 5000 available to the world outside this container
 EXPOSE 5000
 
-# Run app.py when the container launches
-CMD ["python", "app.py"]
+# Run the application using Gunicorn for production
+CMD ["gunicorn", "--bind", "0.0.0.0:5000", "app:app"]
